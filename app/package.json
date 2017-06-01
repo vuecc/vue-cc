@@ -1,0 +1,5 @@
+{
+  "name"    : "ygcc",
+  "version" : "0.1.0",
+  "main"    : "ygcc/main.js"
+}
