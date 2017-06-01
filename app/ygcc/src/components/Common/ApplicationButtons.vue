@@ -62,8 +62,8 @@ export default {
 }
 
 .main-title-bar {
-    width:  calc(100% - 60px);
-    height: 50px;
+    /*width:  calc(100% - 60px);
+    height: 50px;*/
 }
 
 .window-button {

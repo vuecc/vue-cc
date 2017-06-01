@@ -12,21 +12,14 @@ const store = new Vuex.Store({
   },
 
   actions: {
-    login(context, payload) {
-      let loginInfo = payload.userInfo;
-      instance.post('/login', "userName=" + loginInfo.userName + "&password=" + loginInfo.passWard + "&loginCode=&loginType=1&deviceId=00%3A15%3A5d%3A04%3A0f%3A00").then(function (response) {
-        context.commit('updateCurrentUser', {
-          user: response.data
-        });
-      });
+    // https://yg.ismartwork.cn/webapp/restful/contactsController/queryConverContacts?pageNo=1&pageSize=20&replyNeed=1
+
+    queryConverContacts:function(){
     }
   },
 
   mutations: {
     updateCurrentUser: function (state, payload) {
-
-      console.log(payload, 123);
-
       state.currentUser = payload.user;
     }
   },

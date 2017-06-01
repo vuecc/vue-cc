@@ -17,7 +17,11 @@
 			</div>
 		</div>
 		<div class="main-contain">
-			<router-view></router-view>
+			<transition>
+				<keep-alive>
+					<router-view></router-view>
+				</keep-alive>
+			</transition>
 		</div>
 	</div>
 </template>
@@ -56,7 +60,7 @@ export default {
 		selectMenuItem: function (item, index) {
 			this.activeIndex = index;
 			console.log(item.route);
-			this.$router.push({ path: "home/" + item.route });
+			this.$router.replace({ path: "/home/" + item.route });
 		}
 	}
 }
