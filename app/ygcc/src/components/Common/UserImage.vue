@@ -1,7 +1,8 @@
 <template>
-	<div class="user-image" @click="imageClick()" >
+	<div class="user-image" @click="imageClick()">
 		<img class="pic" v-if="imageSrc" :src="imageSrc" v-bind:style="styleObject">
-		<div class="word" v-if="userName">贊</div>
+		<div class="word" v-if="userName" v-bind:style="styleObject">贊</div>
+		<div class="group" v-if="groupDefault" v-bind:style="styleObject"></div>
 	</div>
 </template>
 
@@ -16,6 +17,7 @@ export default {
 		return {
 			imageSrc: '',
 			userName: '',
+			groupDefault: false,
 			styleObject: {}
 		}
 	},
@@ -32,12 +34,13 @@ export default {
 			let value = this.userName;
 			value = value.replace(regexp, '');
 			let len = value.length;
-            this.userName = value.substr(len - 1, len);
+			this.userName = value.substr(len - 1, len);
+		} else if (this.user && this.user.topicType) {
+			this.groupDefault = true;
 		}
 	},
 	methods: {
 		imageClick: function () {
-			console.log("clickimage")
 			this.$emit('clickimage', this.user);
 		}
 	}
@@ -53,4 +56,12 @@ export default {
 }
 
 .user-image .word {}
+
+.user-image .group {
+	margin: auto;
+	background-image: url(./images/user_group.png);
+	background-repeat: no-repeat;
+	background-size: 40px 40px;
+	border-radius: 50%;
+}
 </style>

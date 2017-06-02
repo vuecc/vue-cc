@@ -10,7 +10,7 @@
 			</div>
 			<div class="menu-list">
 				<div class="menu-item" v-for="(item, index) in menu" @click="selectMenuItem(item, index)" :title="item.name">
-					<Icon size="30" :type="item.icon" v-bind:class="{ active: activeIndex == index }"></Icon>
+					<Icon size="30" :type="item.icon" v-bind:class="{ 'home-menu-active': activeIndex == index }"></Icon>
 				</div>
 			</div>
 			<div class="user-setting">
@@ -67,7 +67,7 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style>
 .home {
 	display: flex;
 	width: 100%;
@@ -106,7 +106,7 @@ export default {
 .home .menu-list .menu-item {
 	flex: none;
 	height: 60px;
-	padding: 14px;
+	padding: 15px;
 	cursor: pointer;
 }
 
@@ -115,7 +115,51 @@ export default {
 }
 
 .home .menu-list .menu-item:active,
-.active {
+.home-menu-active {
 	color: #5eb3ff;
+}
+
+.fancy-scrollbar {
+	-webkit-overflow-scrolling: touch;
+}
+
+.fancy-scrollbar::-webkit-scrollbar {
+	height: 10px;
+	width: 10px
+}
+
+.fancy-scrollbar::-webkit-scrollbar-button:end:increment,
+.fancy-scrollbar::-webkit-scrollbar-button:start:decrement {
+	background: 0 0;
+	display: none
+}
+
+.fancy-scrollbar::-webkit-scrollbar-track-piece {
+	/*background: #d0d0d0*/
+	background: -webkit-gradient(linear, left 0, right 0, from(#ccc), to(#aaa));
+}
+
+.fancy-scrollbar::-webkit-scrollbar-track-piece:vertical:start {
+	border-radius: 5px 5px 0 0
+}
+
+.fancy-scrollbar::-webkit-scrollbar-track-piece:vertical:end {
+	border-radius: 0 0 5px 5px
+}
+
+.fancy-scrollbar::-webkit-scrollbar-track-piece:horizontal:start {
+	border-radius: 5px 0 0 5px
+}
+
+.fancy-scrollbar::-webkit-scrollbar-track-piece:horizontal:end {
+	border-radius: 0 5px 5px 0
+}
+
+.fancy-scrollbar::-webkit-scrollbar-thumb:horizontal,
+.fancy-scrollbar::-webkit-scrollbar-thumb:vertical {
+	background: -webkit-gradient(linear, left 0, right 0, from(#777), to(#999));
+	border-radius: 5px;
+	display: block;
+	height: 50px
 }
 </style>
