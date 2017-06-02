@@ -44,7 +44,7 @@ const store = new Vuex.Store({
           if (response && response.data) {
             let temp = response.data;
             if (temp.converVo && temp.converVo.topicType === 1) {
-              temp.converVo.topicId = storeService.getSingleChatTopicPicId(temp, context.state.currentUser);
+              temp.converVo.topicPicId = storeService.getSingleChatTopicPicId(temp, context.state.currentUser);
             }
             context.commit('updateConversationLists', {
               ConversationList: temp

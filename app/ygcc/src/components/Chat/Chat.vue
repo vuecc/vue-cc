@@ -14,9 +14,12 @@
 		<div class="topic">
 			<div class="title">
 				<div class="chat-image">
-					<UserImage width="40" height="40" radius="50%" v-bind:user="topicImageVo"></UserImage>
+					<UserImage width="40" height="40" radius="50%" v-bind:user="topicInfoVo"></UserImage>
 				</div>
-				<div class="chat-name"></div>
+				<div class="chat-name">
+					<div class="">{{topicInfoVo.contactsName}}</div>
+					<div class="">{{topicInfoVo.memberCount}}</div>
+				</div>
 				<div class="chat-buttons"></div>
 			</div>
 			<div class="chat"></div>
@@ -55,17 +58,18 @@ export default {
 			}
 			return temp;
 		},
-		topicImageVo: function () {
+		topicInfoVo: function () {
 			let temp = this.$store.getters.getConversationList;
-			let topicImageVo = {};
+			let topicInfoVo = {};
 			if (temp && temp.converVo) {
-				topicImageVo = {
+				topicInfoVo = {
 					userPicId: temp.converVo.topicPicId ? temp.converVo.topicPicId : null,
-					topicType: temp.converVo.topicType
+					topicType: temp.converVo.topicType,
+					contactsName: temp.converVo.contactsName,
+					memberCount: temp.participants.length
 				}
 			}
-			console.log(topicImageVo);
-			return topicImageVo;
+			return topicInfoVo;
 		}
 	},
 	mounted: function () {
@@ -180,6 +184,7 @@ export default {
 .title .chat-image {
 	flex: none;
 	width: 60px;
+	align-self: center;
 }
 
 .title .chat-name {
