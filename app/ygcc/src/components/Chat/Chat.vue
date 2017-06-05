@@ -17,13 +17,32 @@
 					<UserImage width="40" height="40" radius="50%" v-bind:user="topicInfoVo"></UserImage>
 				</div>
 				<div class="chat-name">
-					<div class="">{{topicInfoVo.contactsName}}</div>
-					<div class="">{{topicInfoVo.memberCount}}</div>
+					<div class="ellipsis" style="user-select: initial">{{topicInfoVo.contactsName}}</div>
+					<div class="ellipsis member" v-if="topicInfoVo.memberCount && topicInfoVo.memberCount != 2">{{topicInfoVo.memberCount}}个成员</div>
 				</div>
-				<div class="chat-buttons"></div>
+				<div class="chat-buttons">
+					<Icon class="button" type="more" title="more"></Icon>
+					<Icon class="button" type="edit" title="edit"></Icon>
+				</div>
 			</div>
-			<div class="chat"></div>
-			<div class="editor"></div>
+			<div class="chat">
+				<ChatList></ChatList>
+			</div>
+			<div class="editor">
+				<div class="edit-button">
+					<Icon class="button-item" size="16" type="happy-outline" title="emoji"></Icon>
+					<Icon class="button-item" size="16" type="image" title="image"></Icon>
+					<Icon class="button-item" size="16" type="ios-folder" title="file"></Icon>
+					<Icon class="button-item" size="16" type="scissors" title="screenshot"></Icon>
+				</div>
+				<pre id="editArea" class="edit-area fancy-scrollbar" contenteditable="true"></pre>
+				<div class="edit-send">
+					<span class="text">ctrl+enter发送</span>
+					<Button class="send-button" type="ghost" :loading="isSending" @click="toSend()" icon="ios-paperplane-outline">
+						<span v-if="!isSending">发送</span>
+					</Button>
+				</div>
+			</div>
 		</div>
 	</div>
 </template>
@@ -31,6 +50,7 @@
 <script>
 
 import ContactItem from '@/components/Chat/ContactItem';
+import ChatList from '@/components/Chat/ChatList';
 import UserImage from '@/components/Common/UserImage';
 import inifiniteScroll from '@/components/Common/Directives/inifiniteScroll';
 
@@ -38,7 +58,8 @@ export default {
 	name: 'Chat',
 	components: {
 		ContactItem,
-		UserImage
+		UserImage,
+		ChatList
 	},
 	data() {
 		return {
@@ -48,6 +69,7 @@ export default {
 			currentPageNo: 1,
 			currentPageSize: 20,
 			currentSelectItem: null,
+			isSending: false
 		}
 	},
 	computed: {
@@ -74,6 +96,11 @@ export default {
 	},
 	mounted: function () {
 		this.fetchConverContacts();
+	},
+	watch: {
+		isSending: function () {
+			console.log(arguments);
+		}
 	},
 	methods: {
 		scrollHandler: function (cb) {
@@ -105,6 +132,13 @@ export default {
 				topicId: item.topicId
 			})
 			this.currentPageNo++;
+		},
+		toSend: function () {
+			let self = this;
+			self.isSending = true;
+			setTimeout(function () {
+				self.isSending = false;
+			}, 2000);
 		}
 	}
 }
@@ -156,6 +190,7 @@ export default {
 
 .chat .topic {
 	flex: auto;
+	overflow: hidden;
 	background-color: #F1F3F5;
 	display: flex;
 	flex-direction: column;
@@ -177,8 +212,12 @@ export default {
 
 .topic .editor {
 	flex: none;
-	height: 50px;
+	height: 160px;
 	background-color: #FFFFFF;
+	border-top: 1px solid #e2e2e2;
+	display: flex;
+	flex-direction: column;
+	padding-right: 10px;
 }
 
 .title .chat-image {
@@ -188,10 +227,80 @@ export default {
 }
 
 .title .chat-name {
+	flex: none;
+	margin-top: 8px;
+	max-width: calc(100% - 240px);
+}
+
+.editor .edit-button {
+	flex: none;
+	height: 30px;
+	padding-top: 8px;
+}
+
+.edit-button .button-item {
+	margin-left: 16px;
+	cursor: pointer;
+}
+
+.edit-button .button-item:hover {
+	color: #2c82ce;
+}
+
+.editor .edit-area {
+	flex: none;
+	height: 90px;
+	margin: 0;
+	outline: none;
+	padding-left: 10px;
+	white-space: pre-wrap;
+	word-break: normal;
+	overflow-x: hidden;
+	overflow-y: auto;
+	font-size: 15px;
+}
+
+.editor .edit-send {
+	flex: none;
+	height: 40px;
+	display: flex;
+}
+
+.edit-send .text {
 	flex: auto;
+	align-self: center;
+	text-align: right;
+	margin-right: 10px;
+}
+
+.edit-send .send-button {
+	flex: none;
+	width: 75px;
+	align-self: flex-start;
+}
+
+.chat-name .ellipsis {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.chat-name .member {
+	color: #A2A2A2;
 }
 
 .title .chat-buttons {
-	flex: auto;
+	flex: none;
+	width: 60px;
+	padding-top: 8px;
+}
+
+.chat-buttons .button {
+	margin-left: 10px;
+	cursor: pointer;
+}
+
+.chat-buttons .button:hover {
+	color: #2c82ce;
 }
 </style>

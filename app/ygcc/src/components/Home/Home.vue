@@ -84,6 +84,7 @@ export default {
 .home .main-contain {
 	order: 1;
 	flex: auto;
+	width: 1px;
 	background-color: bisque;
 }
 
