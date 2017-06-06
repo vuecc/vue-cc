@@ -7,5 +7,8 @@ export default {
   },
   close: function () {
     console.log('close');
+  },
+  show: function(){
+    console.log('show');
   }
 };

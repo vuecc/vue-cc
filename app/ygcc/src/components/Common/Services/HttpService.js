@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-let baseUrl = "https://yg.ismartwork.cn/webapp/restful";
+// let host = "s://yg.ismartwork.cn";
+let host = "://10.51.111.101";
+let baseUrl = "http" + host + "/webapp/restful";
 let instance = axios.create({
   baseURL: baseUrl
 });
@@ -19,6 +21,7 @@ function saveConversation(data) {
 }
 
 export default {
+  getHost: host,
   getAxios: instance,
   getBaseUrl: baseUrl,
   saveConversation: saveConversation

@@ -4,17 +4,20 @@ import cloneDeep from 'lodash/cloneDeep';
 import httpService from '@/components/Common/Services/HttpService';
 import formatService from '@/components/Common/Services/FormatService';
 import storeService from '@/components/Common/Services/StoreService';
+import StorageService from '@/components/Common/Services/StorageService';
 
 let instance = httpService.getAxios;
+let localStorage = StorageService.getLocalStorage();
 
 Vue.use(Vuex);
 
 const store = new Vuex.Store({
   state: {
-    currentUser: {},
+    currentUser: localStorage.getItem("current_user") || {},
     converContacts: [], // 聊天左边列表
     conversationLists: {}, // 回话详情集合 topicId:vo
-    currentConversationList: {} //当前选中的回话
+    currentConversationList: {}, //当前选中的回话
+    receiveChatStack: []
   },
 
   actions: {
@@ -68,7 +71,9 @@ const store = new Vuex.Store({
       let conversationList = conversationLists[payload.topicId];
       let cachedConversationList = storeService.getCachedConversationList(conversationList, payload);
       if (cachedConversationList) {
-        return cachedConversationList;
+        context.commit('updateConversationLists', {
+          pushConversationList: cachedConversationList
+        });
       } else {
         instance.get('/conversation/queryConversationList', {
           params: {
@@ -94,6 +99,7 @@ const store = new Vuex.Store({
   mutations: {
     updateCurrentUser: function (state, payload) {
       state.currentUser = payload.user;
+      localStorage.setItem("current_user", state.currentUser);
     },
     updateConverContacts: function (state, payload) {
       let temp = payload.converContacts.filter((item) => {
@@ -127,6 +133,15 @@ const store = new Vuex.Store({
     },
     updateCurrnetConversationList: function (state, payload) {
       state.currentConversationList = payload.currentConversationList;
+    },
+    pushReceiveChat: function (state, payload) {
+      let dialogueVo = payload.receiveChat;
+      if (state.currentConversationList.topicId == dialogueVo.topicId) {
+        state.currentConversationList.dialogues.push(dialogueVo);
+        state.conversationLists[dialogueVo.topicId].dialogues.push(dialogueVo);
+      } else {
+        state.receiveChatStack.push(dialogueVo);
+      }
     }
   },
 

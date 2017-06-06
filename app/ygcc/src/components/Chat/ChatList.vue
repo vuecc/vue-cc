@@ -25,7 +25,7 @@ export default {
 	mixins: [scrollList],
 	data: function () {
 		return {
-			loading: false,
+			initList: false,
 			scrollHeight: 0,
 			topicType: 0,
 			topicId: ""
@@ -57,11 +57,20 @@ export default {
 		}
 	},
 	watch: {
-		currentConversationDialogues: function () {
-			this.$nextTick(function () {
-				if (this.$refs.scrollList.scrollHeight != this.$refs.scrollList.clientHeight) {
-					this.$refs.scrollList.scrollTop = this.$refs.scrollList.scrollHeight - this.$refs.scrollList.clientHeight;
+		currentConversationDialogues: function (newValue, oldValue) {
+			let self = this;
+			let changTopic = false;
+			self.initList = false;
+			if (!newValue || !oldValue || newValue.topicId != oldValue.topicId) {
+				changTopic = true;
+			}
+			self.$nextTick(function () {
+				if (changTopic && self.$refs.scrollList.scrollHeight != self.$refs.scrollList.clientHeight) {
+					self.$refs.scrollList.scrollTop = self.$refs.scrollList.scrollHeight - self.$refs.scrollList.clientHeight;
 				}
+				setTimeout(function () {
+					self.initList = true;
+				}, 100);
 			})
 		}
 	},
@@ -79,7 +88,9 @@ export default {
 		},
 		scrollHandler: function () {
 			this.scrollHeight = this.$refs.scrollList.scrollHeight;
-			this.loadMore();
+			if (this.initList) {
+				this.loadMore();
+			}
 		},
 		userImageClick: function (userVo) {
 			console.log(userVo)

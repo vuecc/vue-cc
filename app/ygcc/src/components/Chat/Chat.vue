@@ -97,7 +97,6 @@ export default {
 			}
 		},
 		update: function () {
-			console.log("update");
 			if (this.loading) {
 				this.$Loading.finish();
 				this.loading = false;
@@ -115,8 +114,7 @@ export default {
 			this.currentSelectItem = item;
 			this.$store.dispatch('queryConversationList', {
 				pageSize: 5,
-				topicId: item.topicId,
-				cache: true
+				topicId: item.topicId
 			})
 			this.currentPageNo++;
 		}

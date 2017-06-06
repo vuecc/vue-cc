@@ -18,9 +18,9 @@
 		</div>
 		<div class="main-contain">
 			<!--<transition>-->
-				<keep-alive>
-					<router-view></router-view>
-				</keep-alive>
+			<keep-alive>
+				<router-view></router-view>
+			</keep-alive>
 			<!--</transition>-->
 		</div>
 	</div>
@@ -32,6 +32,8 @@ import ApplicationButtons from '@/components/Common/ApplicationButtons';
 import Chat from '@/components/Chat/Chat';
 import HttpService from '@/components/Common/Services/HttpService';
 import MenuService from '@/components/Common/Services/MenuService';
+import NativeService from '@/components/Common/Services/NativeService';
+import websocketService from '@/components/Common/Services/WebsocketService';
 
 export default {
 	name: 'Home',
@@ -44,14 +46,58 @@ export default {
 		return {
 			menu: [],
 			currentMenuItem: null,
-			activeIndex: -1
+			activeIndex: -1,
+			socket: null,
+			websocketTimer: null,
+			watchTimer: null
 		}
 	},
 	created: function () {
+		let self = this;
 		this.menu = MenuService.getMenuList();
 		if (this.menu && this.menu.length > 0) {
 			this.selectMenuItem(this.menu[0], 0);
 		}
+		this.socket = websocketService.openMsgPush(onMsg, onReconn, onFail);
+		function onMsg(resp) {
+			// 根据消息中的flag 来进行处理了.
+			if (!resp || !resp.extras) return;
+			let flag = resp.listenFlag
+			switch (flag) {
+				case "Conversation": {
+					self.$store.commit('pushReceiveChat', {
+						receiveChat: resp.extras
+					});
+					break;
+				}
+			}
+		}
+		function onReconn() {
+			console.log("onReconn");
+		}
+		function onFail() {
+			console.log("onFail");
+			NativeService.show();
+			self.$router.replace({ path: "/login" });
+		}
+		this.websocketTimer = setInterval(function () {
+			self.socket.send('HBT1');
+		}, 10 * 1000);
+		this.watchTimer = setInterval(function () {
+			// var flag = $scope.runInBrowser ? "1" : "4";
+			// UserExResource.monitorUserId($scope.user.userId, flag).success(function (resp) {
+			// 	if ("Inactive" == resp.result) {
+			// 		$scope.logout();
+			// 	}
+			// }).error(function (err) {
+			// 	$scope.logout();
+			// });
+		}, 3 * 60 * 1000);
+	},
+	destroyed: function () {
+		clearInterval(this.websocketTimer);
+		clearInterval(this.watchTimer);
+		this.socket.close();
 	},
 	methods: {
 		mainImageClick: function (user) {
@@ -83,7 +129,7 @@ export default {
 
 .home .main-contain {
 	order: 1;
-	flex: auto;    
+	flex: auto;
 	width: 1px;
 	background-color: bisque;
 }
