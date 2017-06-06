@@ -17,11 +17,11 @@
 			</div>
 		</div>
 		<div class="main-contain">
-			<transition>
+			<!--<transition>-->
 				<keep-alive>
 					<router-view></router-view>
 				</keep-alive>
-			</transition>
+			<!--</transition>-->
 		</div>
 	</div>
 </template>
@@ -83,7 +83,7 @@ export default {
 
 .home .main-contain {
 	order: 1;
-	flex: auto;
+	flex: auto;    
 	width: 1px;
 	background-color: bisque;
 }

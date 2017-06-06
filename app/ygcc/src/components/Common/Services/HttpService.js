@@ -6,7 +6,20 @@ let instance = axios.create({
 });
 instance.defaults.headers.post['FORGED-USER-AGENT'] = 'pcclient';
 
-export default {
-	getAxios: instance,
-	getBaseUrl: baseUrl
+function saveConversation(data) {
+  if (data.dialogueInfo && data.topicId) {
+    let sendVo = {
+      atUserId: data.atUserId || [],
+      dialogueInfo: data.dialogueInfo,
+      topicId: data.topicId,
+      dialogueType: data.dialogueType || 0
+    };
+    return instance.post("/conversation/saveConversation", sendVo);
+  }
 }
+
+export default {
+  getAxios: instance,
+  getBaseUrl: baseUrl,
+  saveConversation: saveConversation
+};

@@ -1,10 +1,10 @@
 <template>
-	<div ref="contain" class="chat">
-		<div ref="list" class="list">
+	<div class="chat">
+		<div class="list">
 			<div class="search">
 				<Input v-model="searchText" icon="search" size="small" placeholder="请输入..."></Input>
 			</div>
-			<div class="items fancy-scrollbar" v-inifinite-scroll="{scrollHandler: scrollHandler, update: update, itemCount: converContacts.length}">
+			<div ref="scrollList" class="items fancy-scrollbar" v-inifinite-scroll="{scrollHandler: scrollHandler, update: update, itemCount: converContacts.length, direction: 'bottom'}">
 				<div v-for="item in converContacts" :key="item.topicId" @click="selectItem(item)" v-bind:class="{ 'chat-list-active': currentSelectItem.topicId == item.topicId }">
 					<ContactItem :item="item"></ContactItem>
 				</div>
@@ -29,19 +29,7 @@
 				<ChatList></ChatList>
 			</div>
 			<div class="editor">
-				<div class="edit-button">
-					<Icon class="button-item" size="16" type="happy-outline" title="emoji"></Icon>
-					<Icon class="button-item" size="16" type="image" title="image"></Icon>
-					<Icon class="button-item" size="16" type="ios-folder" title="file"></Icon>
-					<Icon class="button-item" size="16" type="scissors" title="screenshot"></Icon>
-				</div>
-				<pre id="editArea" class="edit-area fancy-scrollbar" contenteditable="true"></pre>
-				<div class="edit-send">
-					<span class="text">ctrl+enter发送</span>
-					<Button class="send-button" type="ghost" :loading="isSending" @click="toSend()" icon="ios-paperplane-outline">
-						<span v-if="!isSending">发送</span>
-					</Button>
-				</div>
+				<Editor></Editor>
 			</div>
 		</div>
 	</div>
@@ -51,16 +39,20 @@
 
 import ContactItem from '@/components/Chat/ContactItem';
 import ChatList from '@/components/Chat/ChatList';
+import Editor from '@/components/Chat/Editor';
 import UserImage from '@/components/Common/UserImage';
 import inifiniteScroll from '@/components/Common/Directives/inifiniteScroll';
+import scrollList from '@/components/Common/Mixins/TempScrollList';
 
 export default {
 	name: 'Chat',
 	components: {
 		ContactItem,
 		UserImage,
-		ChatList
+		ChatList,
+		Editor
 	},
+	mixins: [scrollList],
 	data() {
 		return {
 			loading: false,
@@ -68,8 +60,7 @@ export default {
 			searchText: "",
 			currentPageNo: 1,
 			currentPageSize: 20,
-			currentSelectItem: null,
-			isSending: false
+			currentSelectItem: null
 		}
 	},
 	computed: {
@@ -97,15 +88,10 @@ export default {
 	mounted: function () {
 		this.fetchConverContacts();
 	},
-	watch: {
-		isSending: function () {
-			console.log(arguments);
-		}
-	},
 	methods: {
 		scrollHandler: function (cb) {
 			this.fetchConverContacts();
-			if (this.loading == false) {
+			if (!this.loading) {
 				this.$Loading.start();
 				this.loading = true;
 			}
@@ -129,16 +115,10 @@ export default {
 			this.currentSelectItem = item;
 			this.$store.dispatch('queryConversationList', {
 				pageSize: 5,
-				topicId: item.topicId
+				topicId: item.topicId,
+				cache: true
 			})
 			this.currentPageNo++;
-		},
-		toSend: function () {
-			let self = this;
-			self.isSending = true;
-			setTimeout(function () {
-				self.isSending = false;
-			}, 2000);
 		}
 	}
 }
@@ -230,53 +210,6 @@ export default {
 	flex: none;
 	margin-top: 8px;
 	max-width: calc(100% - 240px);
-}
-
-.editor .edit-button {
-	flex: none;
-	height: 30px;
-	padding-top: 8px;
-}
-
-.edit-button .button-item {
-	margin-left: 16px;
-	cursor: pointer;
-}
-
-.edit-button .button-item:hover {
-	color: #2c82ce;
-}
-
-.editor .edit-area {
-	flex: none;
-	height: 90px;
-	margin: 0;
-	outline: none;
-	padding-left: 10px;
-	white-space: pre-wrap;
-	word-break: normal;
-	overflow-x: hidden;
-	overflow-y: auto;
-	font-size: 15px;
-}
-
-.editor .edit-send {
-	flex: none;
-	height: 40px;
-	display: flex;
-}
-
-.edit-send .text {
-	flex: auto;
-	align-self: center;
-	text-align: right;
-	margin-right: 10px;
-}
-
-.edit-send .send-button {
-	flex: none;
-	width: 75px;
-	align-self: flex-start;
 }
 
 .chat-name .ellipsis {

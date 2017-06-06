@@ -1,8 +1,9 @@
 <template>
-	<div class="chat-list">
+	<div class="chat-list fancy-scrollbar" ref="scrollList" v-inifinite-scroll="{scrollHandler: scrollHandler, update: update, itemCount: currentConversationDialogues.length, direction: 'top'}">
+		<div class="load-more" @click="loadMore">加载更多</div>
 		<div v-for="item in currentConversationDialogues" class="chat-item" v-bind:class="{ 'self': item.self }">
 			<UserImage class="image" width="40" height="40" radius="50%" v-bind:user="item.userVo" v-on:clickimage="userImageClick"></UserImage>
-			<div class="detail" v-bind:class="{ 'self': item.self }" @click="test(item.self)">
+			<div class="detail" v-bind:class="{ 'self': item.self }">
 				<div class="name" v-if="topicType != 1 && topicType != 0 && !item.self">{{item.userName}}</div>
 				<div class="text">{{item.dialogueInfo}}</div>
 			</div>
@@ -12,24 +13,29 @@
 
 <script>
 
-import nativeService from '@/components/Common/Services/NativeService';
 import moment from '@/components/Common/Filters/MomentFilter';
 import UserImage from '@/components/Common/UserImage';
+import scrollList from '@/components/Common/Mixins/TempScrollList';
 
 export default {
 	name: 'ChatList',
 	components: {
 		UserImage
 	},
+	mixins: [scrollList],
 	data: function () {
 		return {
-			topicType: 0
+			loading: false,
+			scrollHeight: 0,
+			topicType: 0,
+			topicId: ""
 		}
 	},
 	computed: {
 		currentConversationDialogues: function () {
 			let temp = this.$store.getters.getConversationList;
 			let currentUserId = this.$store.getters.getCurrentUser.userId;
+			this.topicId = temp.topicId;
 			if (temp && temp.converVo && temp.converVo.topicType) {
 				// 1双人，2临时群，3正式群
 				this.topicType = temp.converVo.topicType;
@@ -50,10 +56,30 @@ export default {
 			return [];
 		}
 	},
+	watch: {
+		currentConversationDialogues: function () {
+			this.$nextTick(function () {
+				if (this.$refs.scrollList.scrollHeight != this.$refs.scrollList.clientHeight) {
+					this.$refs.scrollList.scrollTop = this.$refs.scrollList.scrollHeight - this.$refs.scrollList.clientHeight;
+				}
+			})
+		}
+	},
 	methods: {
-		test: function (event) {
-			console.log(arguments)
-			console.log(this.$store.getters.getConversationList)
+		loadMore: function () {
+			let timeStamp = this.currentConversationDialogues[0].createDate;
+			this.$store.dispatch('addConversationList', {
+				pageSize: 20,
+				topicId: this.topicId,
+				timeStamp: timeStamp
+			})
+		},
+		update: function () {
+			this.$refs.scrollList.scrollTop = this.$refs.scrollList.scrollHeight - this.scrollHeight;
+		},
+		scrollHandler: function () {
+			this.scrollHeight = this.$refs.scrollList.scrollHeight;
+			this.loadMore();
 		},
 		userImageClick: function (userVo) {
 			console.log(userVo)
@@ -70,12 +96,24 @@ export default {
 	overflow-y: auto;
 }
 
+.chat-list .load-more {
+	text-align: center;
+	padding: 10px;
+	cursor: pointer;
+}
+
 .chat-list .chat-item {
 	display: flex;
 	padding: 10px;
 }
 
-.chat-item .detail {}
+.chat-item .image {
+	cursor: pointer;
+}
+
+.chat-item .detail {
+	max-width: 75%;
+}
 
 .chat-item.self {
 	justify-content: flex-end;

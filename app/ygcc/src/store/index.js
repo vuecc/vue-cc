@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+import cloneDeep from 'lodash/cloneDeep';
 import httpService from '@/components/Common/Services/HttpService';
 import formatService from '@/components/Common/Services/FormatService';
 import storeService from '@/components/Common/Services/StoreService';
@@ -11,9 +12,9 @@ Vue.use(Vuex);
 const store = new Vuex.Store({
   state: {
     currentUser: {},
-    converContacts: [],// 聊天左边列表
+    converContacts: [], // 聊天左边列表
     conversationLists: {}, // 回话详情集合 topicId:vo
-    currentConversationList: {}  //当前选中的回话
+    currentConversationList: {} //当前选中的回话
   },
 
   actions: {
@@ -47,13 +48,44 @@ const store = new Vuex.Store({
               temp.converVo.topicPicId = storeService.getSingleChatTopicPicId(temp, context.state.currentUser);
             }
             context.commit('updateConversationLists', {
-              ConversationList: temp
+              newConversationList: temp
             });
           }
         });
       } else {
+        let temp = cloneDeep(conversationLists[payload.topicId]);
+        if (temp.dialogues && temp.dialogues.length > payload.pageSize) {
+          temp.dialogues = temp.dialogues.splice(temp.dialogues.length - payload.pageSize, payload.pageSize);
+        }
         context.commit('updateCurrnetConversationList', {
-          currentConversationList: conversationLists[payload.topicId]
+          currentConversationList: temp
+        });
+      }
+    },
+    addConversationList(context, payload) {
+      // payload -> topicId, pageSize, timeStamp
+      let conversationLists = context.state.conversationLists;
+      let conversationList = conversationLists[payload.topicId];
+      let cachedConversationList = storeService.getCachedConversationList(conversationList, payload);
+      if (cachedConversationList) {
+        return cachedConversationList;
+      } else {
+        instance.get('/conversation/queryConversationList', {
+          params: {
+            pageSize: payload.pageSize,
+            topicId: payload.topicId,
+            timeStamp: payload.timeStamp
+          }
+        }).then(function (response) {
+          if (response && response.data) {
+            let temp = response.data;
+            if (temp.converVo && temp.converVo.topicType === 1) {
+              temp.converVo.topicPicId = storeService.getSingleChatTopicPicId(temp, context.state.currentUser);
+            }
+            context.commit('updateConversationLists', {
+              pushConversationList: temp
+            });
+          }
         });
       }
     }
@@ -68,13 +100,30 @@ const store = new Vuex.Store({
         return item.converVo.topicType != 8;
       }).map((item) => {
         return formatService.listText(item);
-      })
+      });
       state.converContacts = state.converContacts.concat(temp);
     },
     updateConversationLists: function (state, payload) {
-      let conversationList = payload.ConversationList;
-      state.conversationLists[conversationList.topicId] = conversationList;
-      state.currentConversationList = conversationList;
+      if (payload.newConversationList) {
+        let conversationList = payload.newConversationList;
+        state.conversationLists[conversationList.topicId] = conversationList;
+        state.currentConversationList = cloneDeep(conversationList);
+      }
+      if (payload.pushConversationList) {
+        let pushConversationList = payload.pushConversationList;
+        let conversationList = state.conversationLists[pushConversationList.topicId];
+        conversationList = storeService.mergeCachedConversationList(pushConversationList, conversationList);
+        state.conversationLists[conversationList.topicId] = conversationList;
+        state.currentConversationList = cloneDeep(conversationList);
+      }
+      if (payload.pushDialogueVo) {
+        let dialogueVo = payload.pushDialogueVo;
+        let conversationList = state.conversationLists[dialogueVo.topicId];
+        if (conversationList && conversationList.dialogues) {
+          conversationList.dialogues.push(dialogueVo);
+        }
+        state.currentConversationList.dialogues.push(dialogueVo);
+      }
     },
     updateCurrnetConversationList: function (state, payload) {
       state.currentConversationList = payload.currentConversationList;

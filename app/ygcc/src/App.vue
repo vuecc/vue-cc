@@ -18,5 +18,6 @@ export default {
   bottom: 0;
   left: 0;
   overflow: hidden;
+  font-size : 12px;
 }
 </style>
