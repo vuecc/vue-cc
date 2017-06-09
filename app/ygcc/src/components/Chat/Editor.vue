@@ -52,6 +52,9 @@ export default {
 				self.$store.commit('updateConversationLists', {
 					pushDialogueVo: dialogueVo
 				});
+				self.$bus.emit('chta-list-scroll', {
+					position: "end"
+				});
 			}).catch(error => {
 				self.isSending = false;
 			})

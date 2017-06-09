@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import cloneDeep from 'lodash/cloneDeep';
+import findIndex from 'lodash/findIndex';
 import httpService from '@/components/Common/Services/HttpService';
 import formatService from '@/components/Common/Services/FormatService';
 import storeService from '@/components/Common/Services/StoreService';
@@ -35,6 +36,23 @@ const store = new Vuex.Store({
           });
         }
       });
+    },
+    setConverContactReaded(context, payload) {
+      let conversationLists = context.state.converContacts;
+      let index = findIndex(conversationLists, function (element) {
+        if (element && element.topicId) {
+          return element.topicId == payload.topicId;
+        }
+      });
+      if (index != -1 && conversationLists[index].noReadNum !== 0) {
+        instance.get('/conversation/setConversationReaded', {
+          params: {
+            syncMessage: payload.syncMessage || true,
+            topicId: payload.topcId,
+          }
+        });
+        conversationLists[index].noReadNum = 0;
+      }
     },
     queryConversationList(context, payload) {
       let conversationLists = context.state.conversationLists;
@@ -97,6 +115,10 @@ const store = new Vuex.Store({
   },
 
   mutations: {
+    emitEvent: function (state, payload) {
+      let eventName = payload.name;
+      state.eventBus[eventName] = payload.data;
+    },
     updateCurrentUser: function (state, payload) {
       state.currentUser = payload.user;
       localStorage.setItem("current_user", state.currentUser);
@@ -106,6 +128,9 @@ const store = new Vuex.Store({
         return item.converVo.topicType != 8;
       }).map((item) => {
         return formatService.listText(item);
+      });
+      temp.sort(function (a, b) {
+        return b.dialogueVo.createDate - a.dialogueVo.createDate;
       });
       state.converContacts = state.converContacts.concat(temp);
     },
@@ -136,12 +161,7 @@ const store = new Vuex.Store({
     },
     pushReceiveChat: function (state, payload) {
       let dialogueVo = payload.receiveChat;
-      if (state.currentConversationList.topicId == dialogueVo.topicId) {
-        state.currentConversationList.dialogues.push(dialogueVo);
-        state.conversationLists[dialogueVo.topicId].dialogues.push(dialogueVo);
-      } else {
-        state.receiveChatStack.push(dialogueVo);
-      }
+      storeService.receiveChat(state, dialogueVo);
     }
   },
 

@@ -31,6 +31,11 @@ export default {
 			topicId: ""
 		}
 	},
+	created: function () {
+		this.$bus.on('chta-list-scroll', function (data) {
+			this.scrollTo(data.position);
+		});
+	},
 	computed: {
 		currentConversationDialogues: function () {
 			let temp = this.$store.getters.getConversationList;
@@ -61,7 +66,10 @@ export default {
 			let self = this;
 			let changTopic = false;
 			self.initList = false;
-			if (!newValue || !oldValue || newValue.topicId != oldValue.topicId) {
+			if (!newValue || !oldValue) {
+				changTopic = true;
+			}
+			if (newValue && newValue.length > 0 && oldValue && oldValue.length > 0 && newValue[0].topicId != oldValue[0].topicId) {
 				changTopic = true;
 			}
 			self.$nextTick(function () {
@@ -94,6 +102,15 @@ export default {
 		},
 		userImageClick: function (userVo) {
 			console.log(userVo)
+		},
+		scrollTo: function (position) {
+			if (typeof position === "number") {
+				this.$refs.scrollList.scrollTop = position;
+			} else if (position === "end") {
+				this.$refs.scrollList.scrollTop = this.$refs.scrollList.scrollHeight;
+			} else if (position === "start") {
+				this.$refs.scrollList.scrollTop = 0;
+			}
 		}
 	}
 }

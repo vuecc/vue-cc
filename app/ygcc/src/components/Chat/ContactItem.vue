@@ -1,6 +1,8 @@
 <template>
 	<div class="contactItem">
-		<UserImage class="userImage" width="40" height="40" radius="50%" v-bind:user="image"></UserImage>
+		<Badge :count="converVo.noReadNum" overflow-count="99" class-name="chat-list-badge" class="userImage">
+			<UserImage width="40" height="40" radius="50%" v-bind:user="image"></UserImage>
+		</Badge>
 		<div class="title">
 			<div class="ellipsis" v-if="converVo.contactsName">{{converVo.contactsName}}</div>
 			<div class="ellipsis" v-if="converVo.dialogueInfo">{{converVo.dialogueInfo}}</div>
@@ -30,23 +32,39 @@ export default {
 			isMain: false
 		}
 	},
-	created: function () {
-		this.image = {
-			userPicId: this.item.converVo.topicPicId || null,
-			topicType: this.item.converVo.topicType
-		}
-		this.converVo = {
-			dialogueInfo: this.item.dialogueVo ? this.item.dialogueVo.dialogueInfo : "",
-			createDate: this.item.dialogueVo ? this.item.dialogueVo.createDate : "",
-			contactsName: this.item.converVo ? this.item.converVo.contactsName : ""
+	watch: {
+		item: function () {
+			this.init();
+			console.log(arguments);
 		}
 	},
+	created: function () {
+		this.init();
+	},
 	methods: {
-		
+		init: function () {
+			this.image = {
+				userPicId: this.item.converVo.topicPicId || null,
+				topicType: this.item.converVo.topicType
+			}
+			this.converVo = {
+				dialogueInfo: this.item.dialogueVo ? this.item.dialogueVo.dialogueInfo : "",
+				createDate: this.item.dialogueVo ? this.item.dialogueVo.createDate : "",
+				contactsName: this.item.converVo ? this.item.converVo.contactsName : "",
+				noReadNum: this.item.noReadNum
+			}
+		}
 	}
 }
 </script>
-
+<style>
+.chat-list-badge {
+	box-shadow: none !important;
+	transform: translateX(-25%) !important;
+	top: -6px !important;
+	position: absolute !important;
+}
+</style>
 <style scoped>
 .contactItem {
 	height: 60px;

@@ -2,7 +2,8 @@
 	<div class="chat">
 		<div class="list">
 			<div class="search">
-				<Input v-model="searchText" icon="search" size="small" placeholder="请输入..."></Input>
+				<Input class="input" v-model="searchText" icon="search" size="small" placeholder="请输入..."></Input>
+				<Button class="button" type="ghost" icon="social-tumblr"></Button>
 			</div>
 			<div ref="scrollList" class="items fancy-scrollbar" v-inifinite-scroll="{scrollHandler: scrollHandler, update: update, itemCount: converContacts.length, direction: 'bottom'}">
 				<div v-for="item in converContacts" :key="item.topicId" @click="selectItem(item)" v-bind:class="{ 'chat-list-active': currentSelectItem.topicId == item.topicId }">
@@ -65,7 +66,7 @@ export default {
 	},
 	computed: {
 		converContacts: function () {
-			let temp = this.$store.getters.getConverContacts
+			let temp = this.$store.getters.getConverContacts;
 			if (this.currentSelectItem == null && temp && temp.length > 0) {
 				this.selectItem(temp[0]);
 			}
@@ -113,8 +114,12 @@ export default {
 		selectItem: function (item) {
 			this.currentSelectItem = item;
 			this.$store.dispatch('queryConversationList', {
-				pageSize: 5,
+				pageSize: 5 + item.noReadNum,
 				topicId: item.topicId
+			})
+			this.$store.dispatch('setConverContactReaded', {
+				topicId: item.topicId,
+				syncMessage: true, //是否同步到替他终端 
 			})
 			this.currentPageNo++;
 		}
@@ -146,6 +151,20 @@ export default {
 .list .search {
 	flex: none;
 	padding: 15px;
+	display: flex;
+}
+
+.search .input {
+	flex: none;
+	width: 240px;
+}
+
+.search .button {
+	flex: none;
+	height: 24px;
+	width: 24px;
+	padding: 4px 9px;
+	margin-left: 10px;
 }
 
 .list .items {

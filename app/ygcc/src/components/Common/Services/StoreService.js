@@ -1,6 +1,31 @@
 import findIndex from "lodash/findIndex";
 import cloneDeep from 'lodash/cloneDeep';
 
+function itemMoveToTop(converContacts, index, dialogueVo) {
+  let temp = cloneDeep(converContacts[index]);
+  converContacts.splice(index, 1);
+  temp.dialogueVo = dialogueVo;
+  temp.noReadNum = (temp.noReadNum ? temp.noReadNum : 0) + 1;
+  converContacts.unshift(temp);
+}
+
+function createConverContact(converContacts, dialogueVo) {
+
+}
+
+function createConversationList(dialogueVo) {
+
+}
+
+function pushConversationLists(conversationLists, dialogueVo) {
+  let conversationList = conversationLists[dialogueVo.topicId];
+  if (conversationList && conversationList.dialogues) {
+    conversationList.dialogues.push(dialogueVo);
+  } else {
+    conversationLists[dialogueVo.topicId] = createConversationList(dialogueVo);
+  }
+}
+
 export default {
   getSingleChatTopicPicId: function (conversationList, currentUser) {
     let topicPicId = "";
@@ -35,6 +60,9 @@ export default {
   },
   mergeCachedConversationList: function (push, cache) {
     let index = -1;
+    if (push && !push.dialogues) {
+      push.dialogues = [];
+    }
     if (cache && cache.dialogues && cache.dialogues.length > 0) {
       index = findIndex(push.dialogues, function (item) {
         return item.createDate == cache.dialogues[0].timeStamp;
@@ -46,5 +74,30 @@ export default {
       }
     }
     return push;
+  },
+  receiveChat: function (state, dialogueVo) {
+    let isCurrentItem = false;
+    if (state.currentConversationList.topicId == dialogueVo.topicId) {
+      isCurrentItem = true;
+      state.currentConversationList.dialogues.push(dialogueVo);
+      let temp = state.conversationLists[dialogueVo.topicId];
+      if (temp && temp.dialogues && temp.dialogues.length > 0) {
+        temp.dialogues.push(dialogueVo);
+      }
+    }
+
+    let converContacts = state.converContacts;
+    let index = findIndex(converContacts, function (element) {
+      return element.topicId == dialogueVo.topicId;
+    });
+    if (index != -1) {
+      // 列表中找到
+      itemMoveToTop(converContacts, index, dialogueVo);
+    } else {
+      // 列表中未找到
+      let converContact = createConverContact(converContacts, dialogueVo);
+      converContacts.unshift(converContact);
+    }
+    pushConversationLists(state.conversationLists, dialogueVo);
   }
 };

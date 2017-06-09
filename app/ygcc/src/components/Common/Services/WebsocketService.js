@@ -61,10 +61,7 @@ export default {
   openMsgPush: function (onMsg, onReconn, onFail) {
     function conn() {
       return new Promise(function (resolve, reject) {
-
-        console.log('openMsgPush');
         if (currentUser) {
-          console.log(currentUser);
           try {
             let client = new WebSocket(MSG_PUSH_URI +
               '/YGWebSocket?userId=' + currentUser.userId +
