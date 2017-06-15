@@ -65,8 +65,8 @@ export default {
 			let flag = resp.listenFlag
 			switch (flag) {
 				case "Conversation": {
-					self.$store.commit('pushReceiveChat', {
-						receiveChat: resp.extras
+					self.$store.commit('updateConversationLists', {
+						pushDialogueVo: resp.extras
 					});
 					break;
 				}

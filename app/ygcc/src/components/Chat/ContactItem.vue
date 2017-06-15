@@ -35,7 +35,6 @@ export default {
 	watch: {
 		item: function () {
 			this.init();
-			console.log(arguments);
 		}
 	},
 	created: function () {

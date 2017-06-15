@@ -51,7 +51,9 @@ const store = new Vuex.Store({
             topicId: payload.topcId,
           }
         });
-        conversationLists[index].noReadNum = 0;
+        let conversationList = cloneDeep(conversationLists[index]);
+        conversationList.noReadNum = 0;
+        conversationLists.splice(index, 1, conversationList);
       }
     },
     queryConversationList(context, payload) {
@@ -149,19 +151,12 @@ const store = new Vuex.Store({
       }
       if (payload.pushDialogueVo) {
         let dialogueVo = payload.pushDialogueVo;
-        let conversationList = state.conversationLists[dialogueVo.topicId];
-        if (conversationList && conversationList.dialogues) {
-          conversationList.dialogues.push(dialogueVo);
-        }
         state.currentConversationList.dialogues.push(dialogueVo);
+        storeService.receiveChat(state, dialogueVo);
       }
     },
     updateCurrnetConversationList: function (state, payload) {
       state.currentConversationList = payload.currentConversationList;
-    },
-    pushReceiveChat: function (state, payload) {
-      let dialogueVo = payload.receiveChat;
-      storeService.receiveChat(state, dialogueVo);
     }
   },
 

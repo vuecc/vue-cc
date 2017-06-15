@@ -1,11 +1,13 @@
 import findIndex from "lodash/findIndex";
 import cloneDeep from 'lodash/cloneDeep';
 
-function itemMoveToTop(converContacts, index, dialogueVo) {
+function itemMoveToTop(converContacts, index, dialogueVo, isCurrentItem) {
   let temp = cloneDeep(converContacts[index]);
   converContacts.splice(index, 1);
   temp.dialogueVo = dialogueVo;
-  temp.noReadNum = (temp.noReadNum ? temp.noReadNum : 0) + 1;
+  if (!isCurrentItem) {
+    temp.noReadNum = (temp.noReadNum ? temp.noReadNum : 0) + 1;
+  }
   converContacts.unshift(temp);
 }
 
@@ -79,20 +81,14 @@ export default {
     let isCurrentItem = false;
     if (state.currentConversationList.topicId == dialogueVo.topicId) {
       isCurrentItem = true;
-      state.currentConversationList.dialogues.push(dialogueVo);
-      let temp = state.conversationLists[dialogueVo.topicId];
-      if (temp && temp.dialogues && temp.dialogues.length > 0) {
-        temp.dialogues.push(dialogueVo);
-      }
     }
-
     let converContacts = state.converContacts;
     let index = findIndex(converContacts, function (element) {
       return element.topicId == dialogueVo.topicId;
     });
     if (index != -1) {
       // 列表中找到
-      itemMoveToTop(converContacts, index, dialogueVo);
+      itemMoveToTop(converContacts, index, dialogueVo, isCurrentItem);
     } else {
       // 列表中未找到
       let converContact = createConverContact(converContacts, dialogueVo);
