@@ -24,5 +24,8 @@ export default {
   getHost: host,
   getAxios: instance,
   getBaseUrl: baseUrl,
-  saveConversation: saveConversation
+  saveConversation: saveConversation,
+  validateStatus: function (status) {
+    return status >= 200 && status < 300; //default
+  }
 };

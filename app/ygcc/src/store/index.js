@@ -151,7 +151,9 @@ const store = new Vuex.Store({
       }
       if (payload.pushDialogueVo) {
         let dialogueVo = payload.pushDialogueVo;
-        state.currentConversationList.dialogues.push(dialogueVo);
+        if (state.currentConversationList.topicId == dialogueVo.topicId) {
+          state.currentConversationList.dialogues.push(dialogueVo);
+        }
         storeService.receiveChat(state, dialogueVo);
       }
     },
