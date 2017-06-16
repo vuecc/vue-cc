@@ -73,10 +73,11 @@ export default {
 	cursor: pointer;
 	border-bottom: 1px solid #333;
 	user-select: none;
+	margin-right: 12PX;
 }
 
 .contactItem:hover {
-	background-color: #373E46;
+	/*background-color: #373E46;*/
 }
 
 .contactItem .userImage {

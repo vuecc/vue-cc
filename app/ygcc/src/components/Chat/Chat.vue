@@ -5,10 +5,13 @@
 				<Input class="input" v-model="searchText" icon="search" size="small" placeholder="请输入..."></Input>
 				<Button class="button" type="ghost" icon="social-tumblr"></Button>
 			</div>
-			<div ref="scrollList" class="items fancy-scrollbar" v-inifinite-scroll="{scrollHandler: scrollHandler, update: update, itemCount: converContacts.length, direction: 'bottom'}">
-				<div v-for="item in converContacts" :key="item.topicId" @click="selectItem(item)" v-bind:class="{ 'chat-list-active': currentSelectItem.topicId == item.topicId }">
-					<ContactItem :item="item"></ContactItem>
+			<div ref="scrollList" class="items" v-inifinite-scroll="{scrollHandler: scrollHandler, update: update, itemCount: converContacts.length, direction: 'bottom'}">
+				<div style="over-flow:hidden;" class="none-scrollbar">
+					<div v-for="item in converContacts" :key="item.topicId" @click="selectItem(item)" v-bind:class="{ 'chat-list-active': currentSelectItem.topicId == item.topicId }">
+						<ContactItem :item="item"></ContactItem>
+					</div>
 				</div>
+				<slider :hover="hover"></slider>
 			</div>
 		</div>
 		<!--<div ref="line" class="line"></div>-->
@@ -45,13 +48,16 @@ import UserImage from '@/components/Common/UserImage';
 import inifiniteScroll from '@/components/Common/Directives/inifiniteScroll';
 import scrollList from '@/components/Common/Mixins/TempScrollList';
 
+import slider from '@/components/Common/Slider';
+
 export default {
 	name: 'Chat',
 	components: {
 		ContactItem,
 		UserImage,
 		ChatList,
-		Editor
+		Editor,
+		slider
 	},
 	mixins: [scrollList],
 	data() {
@@ -61,7 +67,8 @@ export default {
 			searchText: "",
 			currentPageNo: 1,
 			currentPageSize: 20,
-			currentSelectItem: null
+			currentSelectItem: null,
+			hover: false
 		}
 	},
 	computed: {
@@ -88,6 +95,14 @@ export default {
 	},
 	mounted: function () {
 		this.fetchConverContacts();
+		let scrollList = this.$refs.scrollList;
+		let self = this;
+		scrollList.addEventListener("mouseenter", function () {
+			self.$set(self, "hover", true)
+		});
+		scrollList.addEventListener("mouseleave", function () {
+			self.$set(self, "hover", false);
+		});
 	},
 	methods: {
 		scrollHandler: function (cb) {
@@ -169,8 +184,9 @@ export default {
 
 .list .items {
 	flex: auto;
+	position: relative;
 	background-color: #272E36;
-	overflow-y: auto;
+	overflow-y: hidden;
 	overflow-x: hidden;
 }
 

@@ -166,6 +166,15 @@ export default {
 	color: #5eb3ff;
 }
 
+.none-scrollbar {
+	-webkit-overflow-scrolling: touch;
+}
+
+.none-scrollbar::-webkit-scrollbar {
+	height: 0px;
+	width: 0px
+}
+
 .fancy-scrollbar {
 	-webkit-overflow-scrolling: touch;
 }
