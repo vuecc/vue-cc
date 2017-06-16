@@ -1,6 +1,6 @@
 <template>
 	<div class="user-image" @click="imageClick()">
-		<img class="pic" v-if="imageSrc" :src="imageSrc" v-bind:style="styleObject">
+		<img class="pic" v-if="imageSrc" :src="imageSrc" v-bind:style="styleObject" draggable="false">
 		<div class="word" v-if="userName" v-bind:style="styleObject">贊</div>
 		<div class="group" v-if="!imageSrc && groupDefault" v-bind:style="styleObject"></div>
 	</div>
@@ -57,7 +57,9 @@ export default {
 </script>
 
 <style scoped>
-.user-image {}
+.user-image {
+	user-select: none;
+}
 
 .user-image .pic {
 	display: block;

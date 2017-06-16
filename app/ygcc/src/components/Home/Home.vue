@@ -178,7 +178,7 @@ export default {
 .fancy-scrollbar::-webkit-scrollbar-button:end:increment,
 .fancy-scrollbar::-webkit-scrollbar-button:start:decrement {
 	background: 0 0;
-	display: none
+	display: none;
 }
 
 .fancy-scrollbar::-webkit-scrollbar-track-piece {
