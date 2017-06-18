@@ -5,13 +5,13 @@
 				<Input class="input" v-model="searchText" icon="search" size="small" placeholder="请输入..."></Input>
 				<Button class="button" type="ghost" icon="social-tumblr"></Button>
 			</div>
-			<div ref="scrollList" class="items" v-inifinite-scroll="{scrollHandler: scrollHandler, update: update, itemCount: converContacts.length, direction: 'bottom'}">
-				<div style="over-flow:hidden;" class="none-scrollbar">
+			<div class="items">
+				<div ref="scrollList" class="scroll none-scrollbar" v-inifinite-scroll="{scrollHandler: scrollHandler, update: update, itemCount: converContacts.length, direction: 'bottom'}">
 					<div v-for="item in converContacts" :key="item.topicId" @click="selectItem(item)" v-bind:class="{ 'chat-list-active': currentSelectItem.topicId == item.topicId }">
 						<ContactItem :item="item"></ContactItem>
 					</div>
 				</div>
-				<slider :hover="hover" :position="position"></slider>
+				<slider :hover="hover" :scrollList="scrollList" ></slider>
 			</div>
 		</div>
 		<!--<div ref="line" class="line"></div>-->
@@ -63,6 +63,7 @@ export default {
 	data() {
 		return {
 			loading: false,
+			scrollList: null,
 			lineStart: 0,
 			searchText: "",
 			currentPageNo: 1,
@@ -70,11 +71,6 @@ export default {
 			currentSelectItem: null,
 			hover: false,
 			position: 0
-		}
-	},
-	watch: {
-		position: function(newValue){
-			console.log('newValue = ' + newValue);
 		}
 	},
 	computed: {
@@ -109,6 +105,7 @@ export default {
 		scrollList.addEventListener("mouseleave", function () {
 			self.$set(self, "hover", false);
 		});
+		this.scrollList = scrollList;
 	},
 	methods: {
 		scrollHandler: function (cb) {
@@ -143,6 +140,9 @@ export default {
 				syncMessage: true, //是否同步到替他终端 
 			})
 			this.currentPageNo++;
+		},
+		scrollListResize: function (scrollPos) {
+			console.log("scrollPos", scrollPos);
 		}
 	}
 }
@@ -192,8 +192,14 @@ export default {
 	flex: auto;
 	position: relative;
 	background-color: #272E36;
-	overflow-y: hidden;
+	overflow: hidden;
+	height: 100%;
+}
+
+.list .items .scroll {
 	overflow-x: hidden;
+	overflow-y: auto;
+	height: 100%;
 }
 
 .items .loading {

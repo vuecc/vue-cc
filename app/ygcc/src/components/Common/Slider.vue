@@ -11,7 +11,7 @@ import throttle from 'lodash/throttle'
 
 export default {
 	name: 'Slider',
-	props: ['hover'],
+	props: ['hover', 'scrollList'],
 	data: function () {
 		return {
 			position: 0,
@@ -20,6 +20,13 @@ export default {
 			offset: 56,
 			boxHeight: 40,
 			mouseDown: false
+		}
+	},
+	watch: {
+		scrollList: function (newValue) {
+			if (newValue) {
+				newValue.addEventListener("scroll", this.scrollHandler)
+			}
 		}
 	},
 	mounted: function () {
@@ -34,6 +41,18 @@ export default {
 		window.removeEventListener('resize', this.throttleResize());
 	},
 	methods: {
+		scrollHandler: function (event) {
+			let ele = event.target;
+			let rate = (ele.scrollTop + ele.clientHeight) / ele.scrollHeight;
+			this.scrollToPos(rate);
+		},
+		scrollToPos: function (rate) {
+			this.position = this.height * rate;
+			this.moveBox();
+		},
+		posToScroll: function () {
+
+		},
 		throttleResize: function () {
 			return throttle(this.resize, 300);
 		},

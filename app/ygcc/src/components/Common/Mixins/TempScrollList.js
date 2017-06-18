@@ -6,12 +6,16 @@ export default {
     let self = this;
     let ele = self.$refs.scrollList;
     let scrollHandler = function (e) {
+      console.log(e.target);
       self._chatListScrollTop = e.target.scrollTop;
     };
     ele.removeEventListener("scroll", scrollHandler);
     ele.addEventListener("scroll", scrollHandler);
     if (ele) {
       ele.scrollTop = self._chatListScrollTop;
+      if (this.scrollListResize) {
+        this.scrollListResize(self._chatListScrollTop);
+      }
     }
-  }
+  },
 };
