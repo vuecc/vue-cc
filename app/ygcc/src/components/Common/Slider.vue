@@ -1,6 +1,6 @@
 <template>
-	<div ref="slider" class="slider" v-bind:class="{ hover: hover||mouseDown }" @click="moveTo">
-		<div ref="box" class="box" v-bind:class="{ hover: hover||mouseDown }"></div>
+	<div ref="slider" class="slider" v-bind:class="{ hover: hover||mouseDown||mouseHover }" @click="moveTo">
+		<div ref="box" class="box" v-bind:class="{ hover: hover||mouseDown||mouseHover }"></div>
 	</div>
 </template>
 
@@ -18,8 +18,9 @@ export default {
 			height: 0,
 			start: 0,
 			offset: 56,
-			boxHeight: 40,
-			mouseDown: false
+			boxHeight: 100,
+			mouseDown: false,
+			mouseHover: false
 		}
 	},
 	watch: {
@@ -30,20 +31,26 @@ export default {
 		}
 	},
 	mounted: function () {
-		this.height = this.$refs.slider.clientHeight;
 		let box = this.$refs.box;
+		let slider = this.$refs.slider;
 		box.addEventListener("mousedown", this.mouseDownHandler);
 		window.addEventListener('resize', this.throttleResize());
+		slider.addEventListener('mouseenter', this.mouseHoverHandler);
+		slider.addEventListener('mouseleave', this.mouseHoverHandler);
+		this.height = slider.clientHeight;
 	},
 	beforeDestroy: function () {
 		let box = this.$refs.box;
+		let slider = this.$refs.slider;
 		box.removeEventListener("mousedown", this.mouseDownHandler);
 		window.removeEventListener('resize', this.throttleResize());
+		slider.removeEventListener('mouseenter', this.mouseHoverHandler);
+		slider.removeEventListener('mouseleave', this.mouseHoverHandler);
 	},
 	methods: {
 		scrollHandler: function (event) {
 			let ele = event.target;
-			let rate = (ele.scrollTop + ele.clientHeight) / ele.scrollHeight;
+			let rate = ele.scrollTop / (ele.scrollHeight - + ele.clientHeight);
 			this.scrollToPos(rate);
 		},
 		scrollToPos: function (rate) {
@@ -79,6 +86,9 @@ export default {
 				this.position = 0;
 			}
 			box.style.marginTop = this.position + "px";
+		},
+		mouseHoverHandler: function () {
+			this.mouseHover = !this.mouseHover;
 		},
 		mouseDownHandler: function (event) {
 			this.start = event.clientY;
@@ -135,7 +145,7 @@ export default {
 
 .slider .box {
 	width: 10px;
-	height: 40px;
+	height: 100px;
 	background-color: transparent;
 	transition: background-color .1s;
 	border-radius: 2px;
