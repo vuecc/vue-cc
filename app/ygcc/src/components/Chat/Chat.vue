@@ -11,7 +11,7 @@
 						<ContactItem :item="item"></ContactItem>
 					</div>
 				</div>
-				<slider :hover="hover"></slider>
+				<slider :hover="hover" :position="position"></slider>
 			</div>
 		</div>
 		<!--<div ref="line" class="line"></div>-->
@@ -68,7 +68,13 @@ export default {
 			currentPageNo: 1,
 			currentPageSize: 20,
 			currentSelectItem: null,
-			hover: false
+			hover: false,
+			position: 0
+		}
+	},
+	watch: {
+		position: function(newValue){
+			console.log('newValue = ' + newValue);
 		}
 	},
 	computed: {
