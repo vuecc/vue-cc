@@ -50,18 +50,30 @@ export default {
 	methods: {
 		scrollHandler: function (event) {
 			let ele = event.target;
-			let rate = ele.scrollTop / (ele.scrollHeight - + ele.clientHeight);
-			this.scrollToPos(rate);
+			let rate = ele.scrollTop / (ele.scrollHeight - ele.clientHeight);
+			if (!this.mouseDown) {
+				this.scrollToPos(rate);
+			}
+
 		},
 		scrollToPos: function (rate) {
 			this.position = this.height * rate;
 			this.moveBox();
 		},
-		posToScroll: function () {
-
+		posToScroll: function (pos, falg) {
+			let list = this.scrollList;
+			let scrollTop = pos * (list.scrollHeight - list.clientHeight) / (this.height - this.boxHeight);
+			if (this.mouseDown || falg) {
+				this.$emit("scrollTo", scrollTop);
+			}
 		},
 		throttleResize: function () {
 			return throttle(this.resize, 300);
+		},
+		initPosition: function () {
+			let list = this.scrollList;
+			this.position = list.scrollTop * (this.height - this.boxHeight) / (list.scrollHeight - list.clientHeight);
+			this.moveBox(false);
 		},
 		resize: function (event) {
 			let box = this.$refs.box;
@@ -78,13 +90,14 @@ export default {
 				box.style.marginTop = "0px";
 			}
 		},
-		moveBox: function () {
+		moveBox: function (falg) {
 			let box = this.$refs.box;
 			if (this.position + this.boxHeight >= this.height) {
 				this.position = this.height - this.boxHeight;
 			} else if (this.position <= 0) {
 				this.position = 0;
 			}
+			this.posToScroll(this.position, falg);
 			box.style.marginTop = this.position + "px";
 		},
 		mouseHoverHandler: function () {
@@ -115,7 +128,7 @@ export default {
 		moveTo: function (event) {
 			let box = this.$refs.box;
 			this.position = event.clientY - this.offset - this.boxHeight / 2;
-			this.moveBox();
+			this.moveBox(true);
 			event.stopPropagation();
 			event.preventDefault();
 		}

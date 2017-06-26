@@ -11,7 +11,7 @@
 						<ContactItem :item="item"></ContactItem>
 					</div>
 				</div>
-				<slider :hover="hover" :scrollList="scrollList" ></slider>
+				<slider ref="slider" :hover="hover" :scrollList="scrollList" v-on:scrollTo="scrollTo"></slider>
 			</div>
 		</div>
 		<!--<div ref="line" class="line"></div>-->
@@ -119,6 +119,7 @@ export default {
 			if (this.loading) {
 				this.$Loading.finish();
 				this.loading = false;
+				this.$refs.slider.initPosition();
 			}
 		},
 		fetchConverContacts: function () {
@@ -141,8 +142,8 @@ export default {
 			})
 			this.currentPageNo++;
 		},
-		scrollListResize: function (scrollPos) {
-			console.log("scrollPos", scrollPos);
+		scrollTo: function (scrollTop) {
+			this.scrollList.scrollTop = scrollTop;
 		}
 	}
 }

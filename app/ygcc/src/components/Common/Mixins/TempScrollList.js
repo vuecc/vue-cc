@@ -1,3 +1,5 @@
+import throttle from 'lodash/throttle'
+
 export default {
   // <seep-alive>的组件每次重现把缓存的chatListScrollTop重现
   // 被缓存的list需要加上ref = "scrollList"标记
@@ -5,10 +7,9 @@ export default {
   activated: function () {
     let self = this;
     let ele = self.$refs.scrollList;
-    let scrollHandler = function (e) {
-      console.log(e.target);
+    let scrollHandler = throttle(function (e) {
       self._chatListScrollTop = e.target.scrollTop;
-    };
+    }, 300);
     ele.removeEventListener("scroll", scrollHandler);
     ele.addEventListener("scroll", scrollHandler);
     if (ele) {
@@ -17,5 +18,5 @@ export default {
         this.scrollListResize(self._chatListScrollTop);
       }
     }
-  },
+  }
 };
