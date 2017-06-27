@@ -1,7 +1,7 @@
 <template>
 	<div class="user-image" @click="imageClick()">
 		<img class="pic" v-if="imageSrc" :src="imageSrc" v-bind:style="styleObject" draggable="false">
-		<div class="word" v-if="userName" v-bind:style="styleObject">贊</div>
+		<div class="word" v-if="userName" v-bind:style="styleObject">{{userName}}</div>
 		<div class="group" v-if="!imageSrc && groupDefault" v-bind:style="styleObject"></div>
 	</div>
 </template>
@@ -36,11 +36,15 @@ export default {
 	},
 	methods: {
 		updateImageInfo: function () {
+			this.imageSrc = null;
+			this.userName = null;
+			this.imageSrc = null;
+
 			if (this.user && this.user.userPicId) {
 				this.imageSrc = HttpService.getBaseUrl + '/fileUploadController/showPic/' + this.user.userPicId;
 			} else if (this.user && this.user.userName) {
 				let regexp = new RegExp('[^\u4e00-\u9fa5]', 'g');
-				let value = this.userName;
+				let value = this.user.userName;
 				value = value.replace(regexp, '');
 				let len = value.length;
 				this.userName = value.substr(len - 1, len);
@@ -66,7 +70,13 @@ export default {
 	margin: auto;
 }
 
-.user-image .word {}
+.user-image .word {
+    background-color: #5eb3ff;
+    color: rgb(255, 255, 255);
+	line-height: 40px;
+	font-size: 22px;
+	text-indent: 9px;
+}
 
 .user-image .group {
 	margin: auto;

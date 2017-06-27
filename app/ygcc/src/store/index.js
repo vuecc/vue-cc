@@ -18,7 +18,6 @@ const store = new Vuex.Store({
     converContacts: [], // 聊天左边列表
     conversationLists: {}, // 回话详情集合 topicId:vo
     currentConversationList: {}, //当前选中的回话
-    receiveChatStack: []
   },
 
   actions: {

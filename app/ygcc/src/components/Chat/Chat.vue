@@ -2,7 +2,7 @@
 	<div class="chat">
 		<div class="list">
 			<div class="search">
-				<Input class="input" v-model="searchText" icon="search" size="small" placeholder="请输入..."></Input>
+				<Input class="input" :v-model="searchText" icon="search" size="small" placeholder="请输入..."></Input>
 				<Button class="button" type="ghost" icon="social-tumblr"></Button>
 			</div>
 			<div class="items">
