@@ -22,19 +22,22 @@ const store = new Vuex.Store({
 
   actions: {
     queryConverContacts(context, payload) {
-      instance.get('/contactsController/queryConverContacts', {
-        params: {
-          pageNo: payload.pageNo,
-          pageSize: payload.pageSize,
-          replyNeed: payload.replyNeed
-        }
-      }).then(function (response) {
-        if (response && response.data && response.data.length > 0) {
-          context.commit('updateConverContacts', {
-            converContacts: response.data
-          });
-        }
-      });
+      return new Promise((resolve, reject) => {
+        instance.get('/contactsController/queryConverContacts', {
+          params: {
+            pageNo: payload.pageNo,
+            pageSize: payload.pageSize,
+            replyNeed: payload.replyNeed
+          }
+        }).then(function (response) {
+          if (response && response.data && response.data.length > 0) {
+            context.commit('updateConverContacts', {
+              converContacts: response.data
+            });
+          }
+          resolve(response.data);
+        });
+      })
     },
     setConverContactReaded(context, payload) {
       let conversationLists = context.state.converContacts;

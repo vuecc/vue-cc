@@ -8,7 +8,7 @@
                 </Input>
             </Form-item>
             <Form-item prop="passWord">
-                <Input type="password" v-model="formInline.passWord" placeholder="Password" :readonly="formInline.passWordReadonly">
+                <Input type="password" v-model="formInline.passWord" placeholder="Password" :readonly="formInline.passWordReadonly" @on-enter="enter">
                 <Icon type="ios-locked-outline" slot="prepend"></Icon>
                 </Input>
             </Form-item>
@@ -79,6 +79,11 @@ export default {
                     });
                 }
             });
+        },
+        enter: function (event) {
+            if (event.keyCode === 13) {
+                this.handleSubmit(this.formInline);
+            }
         }
     }
 }

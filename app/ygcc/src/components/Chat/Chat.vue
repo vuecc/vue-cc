@@ -127,6 +127,11 @@ export default {
 				pageNo: this.currentPageNo,
 				pageSize: this.currentPageSize,
 				replyNeed: 1
+			}).then(data => {
+				if (data.length == 0) {
+					this.loading = true;
+					this.$Loading.finish();
+				}
 			})
 			this.currentPageNo++;
 		},

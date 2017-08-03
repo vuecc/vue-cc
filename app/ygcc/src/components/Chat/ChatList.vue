@@ -1,7 +1,7 @@
 <template>
 	<div class="chat-list fancy-scrollbar" ref="scrollList" v-inifinite-scroll="{scrollHandler: scrollHandler, update: update, itemCount: currentConversationDialogues.length, direction: 'top'}">
 		<div class="load-more" @click="loadMore">加载更多</div>
-		<div v-for="item in currentConversationDialogues" class="chat-item" v-bind:class="{ 'self': item.self }">
+		<div v-for="item in currentConversationDialogues" :key="item.topicId" class="chat-item" v-bind:class="{ 'self': item.self }">
 			<UserImage class="image" width="40" height="40" radius="50%" v-bind:user="item.userVo" v-on:clickimage="userImageClick"></UserImage>
 			<div class="detail" v-bind:class="{ 'self': item.self }">
 				<div class="name" v-if="topicType != 1 && topicType != 0 && !item.self">{{item.userName}}</div>

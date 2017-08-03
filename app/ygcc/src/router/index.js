@@ -11,31 +11,29 @@ Vue.use(Router);
 
 export default new Router({
   routes: [{
-      path: '/',
-      name: 'Login',
-      component: Login
-    },
-    {
-      path: '/login',
-      name: 'Login',
-      component: Login
+    path: '/',
+    name: 'Login',
+    component: Login
+  }, {
+    path: '/login',
+    name: 'Login',
+    component: Login
+  }, {
+    path: '/home',
+    name: 'Home',
+    component: Home,
+    children: [{
+      path: 'chat',
+      name: 'chat',
+      component: Chat,
     }, {
-      path: '/home',
-      name: 'Home',
-      component: Home,
-      children: [{
-        path: 'chat',
-        name: 'chat',
-        component: Chat,
-      }, {
-        path: 'address',
-        name: 'address',
-        component: Address,
-      }, {
-        path: 'channel',
-        name: 'channel',
-        component: Channel,
-      }]
-    }
-  ]
+      path: 'address',
+      name: 'address',
+      component: Address,
+    }, {
+      path: 'channel',
+      name: 'channel',
+      component: Channel,
+    }]
+  }]
 });
