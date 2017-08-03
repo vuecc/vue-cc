@@ -9,7 +9,7 @@
 				</span>
 			</div>
 			<div class="menu-list">
-				<div class="menu-item" v-for="(item, index) in menu" @click="selectMenuItem(item, index)" :title="item.name">
+				<div class="menu-item" v-for="(item, index) in menu" :key="index" @click="selectMenuItem(item, index)" :title="item.name">
 					<Icon size="30" :type="item.icon" v-bind:class="{ 'home-menu-active': activeIndex == index }"></Icon>
 				</div>
 			</div>
